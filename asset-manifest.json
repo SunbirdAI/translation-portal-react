@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/translation-portal-react/static/css/main.990008d3.css",
-    "main.js": "/translation-portal-react/static/js/main.9692ec16.js",
+    "main.css": "/translation-portal-react/static/css/main.d81973e3.css",
+    "main.js": "/translation-portal-react/static/js/main.71b2a9ef.js",
     "static/js/787.a13c6a00.chunk.js": "/translation-portal-react/static/js/787.a13c6a00.chunk.js",
     "static/media/logo.png": "/translation-portal-react/static/media/logo.dc5aaf679600533f0825.png",
     "index.html": "/translation-portal-react/index.html",
-    "main.990008d3.css.map": "/translation-portal-react/static/css/main.990008d3.css.map",
-    "main.9692ec16.js.map": "/translation-portal-react/static/js/main.9692ec16.js.map",
+    "main.d81973e3.css.map": "/translation-portal-react/static/css/main.d81973e3.css.map",
+    "main.71b2a9ef.js.map": "/translation-portal-react/static/js/main.71b2a9ef.js.map",
     "787.a13c6a00.chunk.js.map": "/translation-portal-react/static/js/787.a13c6a00.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.990008d3.css",
-    "static/js/main.9692ec16.js"
+    "static/css/main.d81973e3.css",
+    "static/js/main.71b2a9ef.js"
   ]
 }
