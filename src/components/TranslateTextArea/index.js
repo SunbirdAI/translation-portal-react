@@ -1,6 +1,9 @@
 import {LanguageDropdown, TextArea} from "./TranslateTextArea.styles";
-import {LinearProgress} from "@mui/material";
+import {Button, LinearProgress} from "@mui/material";
 import Feedback from "../Feedback";
+import {VolumeUp} from "@mui/icons-material";
+import {textToSpeech} from "../../API";
+
 
 const TranslateTextArea = ({
                                placeholder,
@@ -13,7 +16,8 @@ const TranslateTextArea = ({
                                setText,
                                sourceLanguage,
                                targetLanguage,
-                               isLoading
+                               isLoading,
+                               handleTextToSpeech
                            }) => {
     const onLanguageChange = (event) => {
         if (!disabled) {
@@ -24,6 +28,14 @@ const TranslateTextArea = ({
     const onTextChange = (event) => {
         setText(event.target.value);
     }
+
+    // const handleTextToSpeech = async () => {
+    //     try {
+    //         await textToSpeech(translation)
+    //     } catch (e) {
+    //         console.log(e);
+    //     }
+    // }
 
     return (
         <div className={disabled ? "bg-gray-100 shadow" : "bg-white shadow"}>
@@ -41,6 +53,13 @@ const TranslateTextArea = ({
             >
             </TextArea>
             {isLoading && disabled && <LinearProgress color="secondary"/>}
+            {!isLoading && targetLanguage === ">>lug<<" && <Button
+                endIcon={<VolumeUp/>}
+                onClick={() => handleTextToSpeech()}
+            >
+                Listen
+            </Button>
+            }
             {disabled && <Feedback
                 sourceText={text}
                 translation={translation}

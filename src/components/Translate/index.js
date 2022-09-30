@@ -2,7 +2,7 @@ import {MainContainer} from "./Translate.styles";
 import TranslateTextArea from "../TranslateTextArea";
 import SamplePhrases from "../SamplePhrases";
 import {useEffect, useRef, useState} from "react";
-import {getTranslation, sendFeedback} from "../../API";
+import {getTranslation, sendFeedback, textToSpeech} from "../../API";
 import {localLangString} from "../../constants";
 
 const localLangOptions = [
@@ -59,6 +59,16 @@ const Translate = () => {
         if (sourceLanguage === localLangString) setTargetLanguage('English');
         else setTargetLanguage(localLangOptions[0].value);
     }, [sourceLanguage])
+
+    const handleTextToSpeech = async () => {
+        try {
+            setIsLoading(true);
+            await textToSpeech(translation)
+            setIsLoading(false);
+        } catch (e) {
+            console.log(e);
+        }
+    }
 
     const translate = async (source) => {
         if (source === '') {
@@ -120,6 +130,7 @@ const Translate = () => {
                 sourceLanguage={sourceLanguage}
                 targetLanguage={targetLanguage}
                 isLoading={isLoading}
+                handleTextToSpeech={handleTextToSpeech}
             />
             <SamplePhrases sourceLanguage={sourceLanguage} setSamplePhrase={setSourceText}/>
         </MainContainer>
