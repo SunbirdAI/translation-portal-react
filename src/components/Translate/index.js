@@ -7,16 +7,16 @@ import {localLangString} from "../../constants";
 
 const localLangOptions = [
     {
+        label: 'Luganda',
+        value: '>>lug<<'
+    },
+    {
         label: 'Acholi',
         value: '>>ach<<'
     },
     {
         label: 'Ateso',
         value: '>>teo<<'
-    },
-    {
-        label: 'Luganda',
-        value: '>>lug<<'
     },
     {
         label: 'Lugbara',
