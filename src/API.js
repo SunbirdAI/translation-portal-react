@@ -94,5 +94,5 @@ export const textToSpeech = async (text) => {
             console.log(`Attempt ${error.attemptNumber} failed. There are ${error.retriesLeft} retries left.`);
         },
         retries: 5
-    })
+    });
 }

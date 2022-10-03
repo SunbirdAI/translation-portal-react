@@ -57,7 +57,7 @@ const TranslateTextArea = ({
                 endIcon={<VolumeUp/>}
                 onClick={() => handleTextToSpeech()}
             >
-                Listen
+                <span className="italic text-xs"> (BETA) </span>
             </Button>
             }
             {disabled && <Feedback
