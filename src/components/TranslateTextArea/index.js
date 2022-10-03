@@ -54,6 +54,7 @@ const TranslateTextArea = ({
             </TextArea>
             {isLoading && disabled && <LinearProgress color="secondary"/>}
             {!isLoading && targetLanguage === ">>lug<<" && <Button
+                disabled={translation === ''}
                 endIcon={<VolumeUp/>}
                 onClick={() => handleTextToSpeech()}
             >
