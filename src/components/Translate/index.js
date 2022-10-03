@@ -61,13 +61,13 @@ const Translate = () => {
     }, [sourceLanguage])
 
     const handleTextToSpeech = async () => {
+        setIsLoading(true);
         try {
-            setIsLoading(true);
             await textToSpeech(translation)
-            setIsLoading(false);
         } catch (e) {
             console.log(e);
         }
+        setIsLoading(false);
     }
 
     const translate = async (source) => {

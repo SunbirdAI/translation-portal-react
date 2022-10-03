@@ -1,3 +1,5 @@
+import pRetry from "p-retry";
+
 const API_URL = process.env.REACT_APP_API_URL;
 const FEEDBACK_URL = process.env.REACT_APP_FEEDBACK_URL;
 const HUGGING_FACE_API_KEY = process.env.REACT_APP_HUGGING_FACE_API_KEY;
@@ -38,7 +40,7 @@ export const sendFeedback = async (feedback, sourceText, translation, from, to) 
 
 const huggingFaceUrl = "https://api-inference.huggingface.co/models/Sunbird/sunbird-lug-tts"
 
-export const textToSpeech = async (text) => {
+const getSpeech = async (text) => {
     const data = {
         "inputs": text
     };
@@ -52,39 +54,45 @@ export const textToSpeech = async (text) => {
         body: JSON.stringify(data)
     };
 
-    // const response = await (await fetch(huggingFaceUrl, requestOptions));
-    fetch(huggingFaceUrl, requestOptions)
-        .then((response) => {
-            const reader = response.body.getReader();
-            return new ReadableStream({
-                start(controller) {
-                    return pump();
+    const response = await fetch(huggingFaceUrl, requestOptions);
 
-                    function pump() {
-                        return reader.read().then(({done, value}) => {
-                            // When no more data needs to be consumed, close the stream
-                            if (done) {
-                                controller.close();
-                                return;
-                            }
-                            // Enqueue the next data chunk into our target stream
-                            controller.enqueue(value);
-                            return pump();
-                        });
+    if (!response.ok) {
+        throw new Error(response.statusText);
+    }
+
+    const reader = response.body.getReader();
+
+    const stream = new ReadableStream({
+        start(controller) {
+
+            return pump();
+
+            function pump() {
+                return reader.read().then(({done, value}) => {
+                    if (done) {
+                        // When no more data needs to be consumed, close the stream
+                        controller.close();
+                        return;
                     }
-                }
-            })
-            // // console.log(JSON.stringify(response));
-            // const audio = new Audio(response);
-            // await audio.play();
-            // return response;
-        })
-        .then((stream) => new Response(stream))
-        .then((response) => response.blob())
-        .then((blob) => {
-            let url = window.URL.createObjectURL(blob);
-            window.audio = new Audio();
-            window.audio.src = url;
-            window.audio.play();
-        })
+                    // Enqueue the next data chunk into our target stream
+                    controller.enqueue(value);
+                    return pump();
+                });
+            }
+        }
+    });
+    const responseBlob = new Response(stream);
+    let url = window.URL.createObjectURL(await responseBlob.blob());
+    window.audio = new Audio();
+    window.audio.src = url;
+    await window.audio.play();
+}
+
+export const textToSpeech = async (text) => {
+    await pRetry(() => getSpeech(text), {
+        onFailedAttempt: error => {
+            console.log(`Attempt ${error.attemptNumber} failed. There are ${error.retriesLeft} retries left.`);
+        },
+        retries: 5
+    })
 }
