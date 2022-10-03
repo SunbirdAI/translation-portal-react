@@ -2,7 +2,6 @@ import {LanguageDropdown, TextArea} from "./TranslateTextArea.styles";
 import {Button, LinearProgress} from "@mui/material";
 import Feedback from "../Feedback";
 import {VolumeUp} from "@mui/icons-material";
-import {textToSpeech} from "../../API";
 
 
 const TranslateTextArea = ({
@@ -28,14 +27,6 @@ const TranslateTextArea = ({
     const onTextChange = (event) => {
         setText(event.target.value);
     }
-
-    // const handleTextToSpeech = async () => {
-    //     try {
-    //         await textToSpeech(translation)
-    //     } catch (e) {
-    //         console.log(e);
-    //     }
-    // }
 
     return (
         <div className={disabled ? "bg-gray-100 shadow" : "bg-white shadow"}>
