@@ -1,9 +1,12 @@
 import pRetry from "p-retry";
 
-const API_URL = process.env.REACT_APP_API_URL;
 const FEEDBACK_URL = process.env.REACT_APP_FEEDBACK_URL;
 const HUGGING_FACE_API_KEY = process.env.REACT_APP_HUGGING_FACE_API_KEY;
 export const tracking_id = process.env.REACT_APP_GA4_TRACKING_ID;
+
+const textToSpeechUrl = "https://api-inference.huggingface.co/models/Sunbird/sunbird-lug-tts";
+const multipleToEnglishUrl = "https://api-inference.huggingface.co/models/Sunbird/sunbird-mul-en";
+const englishToMultipleUrl = "https://api-inference.huggingface.co/models/Sunbird/sunbird-en-mul";
 
 
 export const getTranslation = async (sentence, model) => {
@@ -11,11 +14,12 @@ export const getTranslation = async (sentence, model) => {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
-            "model": model,
             "inputs": sentence
         })
     }
-    const response = await (await fetch(API_URL, requestOptions)).json();
+
+    let url = model === 'en-mul' ? englishToMultipleUrl : multipleToEnglishUrl;
+    const response = await (await fetch(url, requestOptions)).json();
     return response[0]["generated_text"];
 }
 
@@ -38,8 +42,6 @@ export const sendFeedback = async (feedback, sourceText, translation, from, to) 
 }
 
 
-const huggingFaceUrl = "https://api-inference.huggingface.co/models/Sunbird/sunbird-lug-tts"
-
 const getSpeech = async (text) => {
     const data = {
         "inputs": text
@@ -54,7 +56,7 @@ const getSpeech = async (text) => {
         body: JSON.stringify(data)
     };
 
-    const response = await fetch(huggingFaceUrl, requestOptions);
+    const response = await fetch(textToSpeechUrl, requestOptions);
 
     if (!response.ok) {
         throw new Error(response.statusText);
@@ -93,6 +95,15 @@ export const textToSpeech = async (text) => {
         onFailedAttempt: error => {
             console.log(`Attempt ${error.attemptNumber} failed. There are ${error.retriesLeft} retries left.`);
         },
-        retries: 5
+        retries: 7
     });
+}
+
+export const translate = async (sentence, model) => {
+    await pRetry(() => getTranslation(sentence, model), {
+        onFailedAttempt: error => {
+            console.log(`Attempt ${error.attemptNumber} failed. There are ${error.retriesLeft} retries left.`);
+        },
+        retries: 7
+    })
 }
