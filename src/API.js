@@ -41,6 +41,10 @@ export const sendFeedback = async (feedback, sourceText, translation, from, to) 
     return response;
 }
 
+const getTextFromSpeech = async (audio) => {
+    console.log("Testing speech to text")
+    return "Testing speech to text"
+}
 
 const getSpeech = async (text) => {
     const data = {
@@ -92,6 +96,15 @@ const getSpeech = async (text) => {
 
 export const textToSpeech = async (text) => {
     await pRetry(() => getSpeech(text), {
+        onFailedAttempt: error => {
+            console.log(`Attempt ${error.attemptNumber} failed. There are ${error.retriesLeft} retries left.`);
+        },
+        retries: 7
+    });
+}
+
+export const speechToText = async (text) => {
+    await pRetry(() => getTextFromSpeech(text), {
         onFailedAttempt: error => {
             console.log(`Attempt ${error.attemptNumber} failed. There are ${error.retriesLeft} retries left.`);
         },

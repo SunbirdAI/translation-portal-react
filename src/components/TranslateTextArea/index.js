@@ -1,7 +1,9 @@
 import {LanguageDropdown, TextArea} from "./TranslateTextArea.styles";
 import {Button, LinearProgress} from "@mui/material";
 import Feedback from "../Feedback";
-import {VolumeUp} from "@mui/icons-material";
+import {VolumeUp, Mic} from "@mui/icons-material";
+import {localLangString} from "../../constants";
+
 
 
 const TranslateTextArea = ({
@@ -16,7 +18,8 @@ const TranslateTextArea = ({
                                sourceLanguage,
                                targetLanguage,
                                isLoading,
-                               handleTextToSpeech
+                               handleTextToSpeech,
+                               handleSpeechToText
                            }) => {
     const onLanguageChange = (event) => {
         if (!disabled) {
@@ -43,6 +46,14 @@ const TranslateTextArea = ({
                 onChange={onTextChange}
             >
             </TextArea>
+            {!isLoading && sourceLanguage !== "English" && <Button
+                disabled={text !== ''}
+                endIcon={<Mic/>}
+                onClick={() => handleSpeechToText()}
+            >
+                <span className="italic text-xs"> (BETA) </span>
+            </Button>
+            }
             {isLoading && disabled && <LinearProgress color="secondary"/>}
             {!isLoading && targetLanguage === ">>lug<<" && <Button
                 disabled={translation === ''}

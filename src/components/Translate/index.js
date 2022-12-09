@@ -2,7 +2,7 @@ import {MainContainer} from "./Translate.styles";
 import TranslateTextArea from "../TranslateTextArea";
 import SamplePhrases from "../SamplePhrases";
 import {useEffect, useRef, useState} from "react";
-import {translateHF, sendFeedback, textToSpeech} from "../../API";
+import {translateHF, sendFeedback, textToSpeech, speechToText} from "../../API";
 import {localLangString} from "../../constants";
 
 const localLangOptions = [
@@ -70,6 +70,16 @@ const Translate = () => {
         setIsLoading(false);
     }
 
+    const handleSpeechToText = async () => {
+        setIsLoading(true);
+        try {
+            await speechToText("...placeholder...")
+        } catch (e) {
+            console.log(e);
+        }
+        setIsLoading(false);
+    }
+
     const translate = async (source) => {
         if (source === '') {
             setTranslation('');
@@ -119,6 +129,7 @@ const Translate = () => {
                 setSourceLanguage={setSourceLanguage}
                 text={sourceText}
                 setText={setSourceText}
+                handleSpeechToText={handleSpeechToText}
             />
             <TranslateTextArea
                 placeholder="Translation"
