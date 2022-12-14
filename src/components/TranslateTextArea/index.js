@@ -1,7 +1,7 @@
 import {LanguageDropdown, TextArea} from "./TranslateTextArea.styles";
 import {Button, LinearProgress} from "@mui/material";
 import Feedback from "../Feedback";
-import {VolumeUp, Mic} from "@mui/icons-material";
+import {VolumeUp, Mic, MicOff, Save} from "@mui/icons-material";
 import {localLangString} from "../../constants";
 
 
@@ -19,7 +19,12 @@ const TranslateTextArea = ({
                                targetLanguage,
                                isLoading,
                                handleTextToSpeech,
-                               handleSpeechToText
+                               handleSpeechToText,
+                               isRecording,
+                               startRecording,
+                               stopRecording,
+                               audioPlayer,
+                               blobURL
                            }) => {
     const onLanguageChange = (event) => {
         if (!disabled) {
@@ -46,14 +51,36 @@ const TranslateTextArea = ({
                 onChange={onTextChange}
             >
             </TextArea>
-            {!isLoading && sourceLanguage !== "English" && <Button
-                disabled={text !== ''}
-                endIcon={<Mic/>}
-                onClick={() => handleSpeechToText()}
-            >
-                <span className="italic text-xs"> (BETA) </span>
-            </Button>
+            {!isLoading && sourceLanguage !== "English" && 
+            <div className="container">
+                <p className="m-2 text-s">
+                    <span className="italic text-xs"> (BETA) </span>
+                    Try speech-to-text by recording your phrase (Luganda only for now):
+                </p>
+                <div className="grid grid-cols-3 m-2 gap-2">
+                    <Button
+                        variant="outlined"
+                        disabled={text !== '' && isRecording}
+                        endIcon={<Mic/>}
+                        onClick={startRecording}
+                    >Start</Button>
+                    <Button
+                        disabled={text !== '' && !isRecording}
+                        variant="outlined"
+                        endIcon={<MicOff/>}
+                        onClick={stopRecording}
+                    >Stop</Button>
+                    <Button
+                        variant="outlined"
+                        disabled={text !== ''}
+                        endIcon={<Save/>}
+                        onClick={() => handleSpeechToText()}
+                    >Save</Button>
+                </div>
+                <audio ref={audioPlayer} src={blobURL} controls='controls' />
+            </div>
             }
+
             {isLoading && disabled && <LinearProgress color="secondary"/>}
             {!isLoading && targetLanguage === ">>lug<<" && <Button
                 disabled={translation === ''}
