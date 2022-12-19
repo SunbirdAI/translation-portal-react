@@ -5,6 +5,7 @@ const HUGGING_FACE_API_KEY = process.env.REACT_APP_HUGGING_FACE_API_KEY;
 export const tracking_id = process.env.REACT_APP_GA4_TRACKING_ID;
 
 const textToSpeechUrl = "https://api-inference.huggingface.co/models/Sunbird/sunbird-lug-tts";
+const speechToTextUrl = "https://api-inference.huggingface.co/models/Sunbird/sunbird-asr";
 const multipleToEnglishUrl = "https://api-inference.huggingface.co/models/Sunbird/sunbird-mul-en";
 const englishToMultipleUrl = "https://api-inference.huggingface.co/models/Sunbird/sunbird-en-mul";
 
@@ -42,8 +43,26 @@ export const sendFeedback = async (feedback, sourceText, translation, from, to) 
 }
 
 const getTextFromSpeech = async (audio) => {
-    console.log("Testing speech to text")
-    return "Testing speech to text"
+    const data = {
+        "inputs": audio
+    };
+    console.log(data);
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${HUGGING_FACE_API_KEY}`
+        },
+        body: JSON.stringify(data)
+    };
+
+    const response = await fetch(speechToTextUrl, requestOptions);
+
+    if (!response.ok) {
+        throw new Error(response.statusText);
+    }
+
+    return response;
 }
 
 const getSpeech = async (text) => {
@@ -103,13 +122,15 @@ export const textToSpeech = async (text) => {
     });
 }
 
-export const speechToText = async (text) => {
-    await pRetry(() => getTextFromSpeech(text), {
+export const speechToText = async (audio) => {
+    const response = await pRetry(() => getTextFromSpeech(audio), {
         onFailedAttempt: error => {
             console.log(`Attempt ${error.attemptNumber} failed. There are ${error.retriesLeft} retries left.`);
         },
         retries: 7
     });
+
+    return response;
 }
 
 export const translateHF = async (sentence, model) => {

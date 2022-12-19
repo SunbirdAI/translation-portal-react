@@ -24,7 +24,8 @@ const TranslateTextArea = ({
                                startRecording,
                                stopRecording,
                                audioPlayer,
-                               blobURL
+                               blobURL,
+                               transcript
                            }) => {
     const onLanguageChange = (event) => {
         if (!disabled) {
@@ -53,31 +54,26 @@ const TranslateTextArea = ({
             </TextArea>
             {!isLoading && sourceLanguage !== "English" && 
             <div className="container">
-                <p className="m-2 text-s">
-                    <span className="italic text-xs"> (BETA) </span>
-                    Try speech-to-text by recording your phrase (Luganda only for now):
+                <p className="m-2 text-sm">
+                    <span className="italic"> (BETA) </span>
+                    Try Luganda speech-to-text by recording a phrase:
                 </p>
                 <div className="grid grid-cols-3 m-2 gap-2">
                     <Button
                         variant="outlined"
                         disabled={text !== '' && isRecording}
                         endIcon={<Mic/>}
-                        onClick={startRecording}
+                        onClick={() => startRecording()}
                     >Start</Button>
                     <Button
                         disabled={text !== '' && !isRecording}
                         variant="outlined"
                         endIcon={<MicOff/>}
-                        onClick={stopRecording}
+                        onClick={() => stopRecording()}
                     >Stop</Button>
-                    <Button
-                        variant="outlined"
-                        disabled={text !== ''}
-                        endIcon={<Save/>}
-                        onClick={() => handleSpeechToText()}
-                    >Save</Button>
                 </div>
-                <audio ref={audioPlayer} src={blobURL} controls='controls' />
+                <audio className="m-2" ref={audioPlayer} src={blobURL} controls='controls' />
+                <p className="m-2 text-s">{transcript}</p>
             </div>
             }
 

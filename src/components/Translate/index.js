@@ -5,7 +5,6 @@ import {useEffect, useRef, useState} from "react";
 import {translateHF, sendFeedback, textToSpeech, speechToText} from "../../API";
 import {localLangString} from "../../constants";
 import MicRecorder from "mic-recorder-to-mp3"
-import axios from "axios"
 
 const localLangOptions = [
     {
@@ -63,7 +62,7 @@ const Translate = () => {
     const [blobURL, setBlobUrl] = useState(null)
     const [audioFile, setAudioFile] = useState(null)
     const [isRecording, setIsRecording] = useState(null)
-
+    const [transcript, setTranscript] = useState(null)
 
     useEffect(() => {
         if (sourceLanguage === localLangString) setTargetLanguage('English');
@@ -80,10 +79,10 @@ const Translate = () => {
         setIsLoading(false);
     }
 
-    const handleSpeechToText = async () => {
+    const handleSpeechToText = async (audio) => {
         setIsLoading(true);
         try {
-            await speechToText("...placeholder...")
+            setTranscript(await speechToText(audio));
         } catch (e) {
             console.log(e);
         }
@@ -135,16 +134,16 @@ const Translate = () => {
     // Mic-Recorder-To-MP3
     useEffect(() => {
         recorder.current = new MicRecorder({ bitRate: 128 })
-      }, [])
+    }, [])
     
-      const startRecording = () => {
+    const startRecording = () => {
         // Check if recording isn't blocked by browser
         recorder.current.start().then(() => {
           setIsRecording(true)
         })
-      }
-    
-      const stopRecording = () => {
+    }
+
+    const stopRecording = () => {
         recorder.current
           .stop()
           .getMp3()
@@ -157,10 +156,10 @@ const Translate = () => {
             setBlobUrl(newBlobUrl)
             setIsRecording(false)
             setAudioFile(file)
+            handleSpeechToText(audioFile)
           })
           .catch((e) => console.log(e))
-      }
-    
+    }
 
     return (
         <MainContainer>
@@ -176,6 +175,7 @@ const Translate = () => {
                 handleSpeechToText={handleSpeechToText}
                 audioPlayer={audioPlayer}
                 blobURL={blobURL}
+                transcript={transcript}
             />
             <TranslateTextArea
                 placeholder="Translation"
