@@ -1,7 +1,7 @@
 import {LanguageDropdown, TextArea} from "./TranslateTextArea.styles";
 import {Button, LinearProgress} from "@mui/material";
 import Feedback from "../Feedback";
-import {VolumeUp, Mic, MicOff, Save} from "@mui/icons-material";
+import {VolumeUp, Mic, MicOff} from "@mui/icons-material";
 import {localLangString} from "../../constants";
 
 
@@ -25,7 +25,6 @@ const TranslateTextArea = ({
                                stopRecording,
                                audioPlayer,
                                blobURL,
-                               transcript
                            }) => {
     const onLanguageChange = (event) => {
         if (!disabled) {
@@ -58,22 +57,27 @@ const TranslateTextArea = ({
                     <span className="italic"> (BETA) </span>
                     Try Luganda speech-to-text by recording a phrase:
                 </p>
-                <div className="grid grid-cols-3 m-2 gap-2">
-                    <Button
+                <div className="grid grid-cols-2 m-2 gap-2">
+                    {isRecording ? 
+                    (<Button
+                        disabled={text !== '' && !isRecording}
+                        color="error"
+                        variant="outlined"
+                        endIcon={<MicOff/>}
+                        onClick={() => stopRecording()}>
+                        Click to stop recording
+                    </Button>)
+                    :
+                    (<Button
                         variant="outlined"
                         disabled={text !== '' && isRecording}
                         endIcon={<Mic/>}
-                        onClick={() => startRecording()}
-                    >Start</Button>
-                    <Button
-                        disabled={text !== '' && !isRecording}
-                        variant="outlined"
-                        endIcon={<MicOff/>}
-                        onClick={() => stopRecording()}
-                    >Stop</Button>
+                        onClick={() => startRecording()}>
+                        Start recording
+                    </Button>)
+                    }
                 </div>
                 <audio className="m-2" ref={audioPlayer} src={blobURL} controls='controls' />
-                <p className="m-2 text-s">{transcript}</p>
             </div>
             }
 

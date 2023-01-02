@@ -62,7 +62,6 @@ const Translate = () => {
     const [blobURL, setBlobUrl] = useState(null)
     const [audioFile, setAudioFile] = useState(null)
     const [isRecording, setIsRecording] = useState(null)
-    const [transcript, setTranscript] = useState(null)
 
     useEffect(() => {
         if (sourceLanguage === localLangString) setTargetLanguage('English');
@@ -82,7 +81,7 @@ const Translate = () => {
     const handleSpeechToText = async (audio) => {
         setIsLoading(true);
         try {
-            setTranscript(await speechToText(audio));
+            setSourceText(await speechToText(audio));
         } catch (e) {
             console.log(e);
         }
@@ -175,7 +174,6 @@ const Translate = () => {
                 handleSpeechToText={handleSpeechToText}
                 audioPlayer={audioPlayer}
                 blobURL={blobURL}
-                transcript={transcript}
             />
             <TranslateTextArea
                 placeholder="Translation"

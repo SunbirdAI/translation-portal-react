@@ -58,11 +58,12 @@ const getTextFromSpeech = async (audio) => {
 
     const response = await fetch(speechToTextUrl, requestOptions);
 
-    if (!response.ok) {
-        throw new Error(response.statusText);
-    }
+    // if (!response.ok) {
+    //     throw new Error(response.statusText);
+    // }
 
-    return response;
+    // return response;
+    return "Sample text";
 }
 
 const getSpeech = async (text) => {
@@ -127,7 +128,7 @@ export const speechToText = async (audio) => {
         onFailedAttempt: error => {
             console.log(`Attempt ${error.attemptNumber} failed. There are ${error.retriesLeft} retries left.`);
         },
-        retries: 7
+        retries: 2
     });
 
     return response;
