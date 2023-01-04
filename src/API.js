@@ -58,12 +58,11 @@ const getTextFromSpeech = async (audio) => {
 
     const response = await fetch(speechToTextUrl, requestOptions);
 
-    // if (!response.ok) {
-    //     throw new Error(response.statusText);
-    // }
+    if (!response.ok) {
+        throw new Error(response.statusText);
+    }
 
-    // return response;
-    return "Sample text";
+    return response;
 }
 
 const getSpeech = async (text) => {

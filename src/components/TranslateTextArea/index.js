@@ -53,31 +53,23 @@ const TranslateTextArea = ({
             </TextArea>
             {!isLoading && sourceLanguage !== "English" && 
             <div className="container">
-                <p className="m-2 text-sm">
-                    <span className="italic"> (BETA) </span>
-                    Try Luganda speech-to-text by recording a phrase:
-                </p>
-                <div className="grid grid-cols-2 m-2 gap-2">
-                    {isRecording ? 
-                    (<Button
-                        disabled={text !== '' && !isRecording}
-                        color="error"
-                        variant="outlined"
-                        endIcon={<MicOff/>}
-                        onClick={() => stopRecording()}>
-                        Click to stop recording
-                    </Button>)
-                    :
-                    (<Button
-                        variant="outlined"
-                        disabled={text !== '' && isRecording}
-                        endIcon={<Mic/>}
-                        onClick={() => startRecording()}>
-                        Start recording
-                    </Button>)
-                    }
-                </div>
-                <audio className="m-2" ref={audioPlayer} src={blobURL} controls='controls' />
+                {isRecording ? 
+                (<Button
+                    disabled={text !== '' && !isRecording}
+                    color="error"
+                    endIcon={<MicOff/>}
+                    onClick={() => stopRecording()}>
+                    <span className="italic text-xs"> (BETA) </span>
+                </Button>)
+                :
+                (<Button
+                    disabled={text !== '' && isRecording}
+                    endIcon={<Mic/>}
+                    onClick={() => startRecording()}>
+                    <span className="italic text-xs"> (BETA) </span>
+                </Button>)
+                }
+                {/* <audio className="m-2" ref={audioPlayer} src={blobURL} controls="controls" /> */}
             </div>
             }
 
