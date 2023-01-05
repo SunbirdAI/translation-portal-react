@@ -62,6 +62,7 @@ const Translate = () => {
     const [blobURL, setBlobUrl] = useState(null)
     const [audioFile, setAudioFile] = useState(null)
     const [isRecording, setIsRecording] = useState(null)
+    const [showAudioPlayer, setShowAudioPlayer] = useState(false)
 
     useEffect(() => {
         if (sourceLanguage === localLangString) setTargetLanguage('English');
@@ -139,6 +140,7 @@ const Translate = () => {
         // Check if recording isn't blocked by browser
         recorder.current.start().then(() => {
           setIsRecording(true)
+          setShowAudioPlayer(false)
         })
     }
 
@@ -155,6 +157,7 @@ const Translate = () => {
             setBlobUrl(newBlobUrl)
             setIsRecording(false)
             setAudioFile(file)
+            setShowAudioPlayer(true)
             handleSpeechToText(audioFile)
           })
           .catch((e) => console.log(e))
@@ -171,6 +174,7 @@ const Translate = () => {
                 isRecording={isRecording}
                 startRecording={startRecording}
                 stopRecording={stopRecording}
+                showAudioPlayer={showAudioPlayer}
                 handleSpeechToText={handleSpeechToText}
                 audioPlayer={audioPlayer}
                 blobURL={blobURL}

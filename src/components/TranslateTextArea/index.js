@@ -23,6 +23,7 @@ const TranslateTextArea = ({
                                isRecording,
                                startRecording,
                                stopRecording,
+                               showAudioPlayer,
                                audioPlayer,
                                blobURL,
                            }) => {
@@ -51,11 +52,11 @@ const TranslateTextArea = ({
                 onChange={onTextChange}
             >
             </TextArea>
-            {!isLoading && sourceLanguage !== "English" && 
+            {!isLoading && sourceLanguage != "English" && 
             <div className="container">
                 {isRecording ? 
                 (<Button
-                    disabled={text !== '' && !isRecording}
+                    disabled={text !== "" && !isRecording}
                     color="error"
                     endIcon={<MicOff/>}
                     onClick={() => stopRecording()}>
@@ -63,13 +64,13 @@ const TranslateTextArea = ({
                 </Button>)
                 :
                 (<Button
-                    disabled={text !== '' && isRecording}
+                    disabled={text !== "" && isRecording}
                     endIcon={<Mic/>}
                     onClick={() => startRecording()}>
                     <span className="italic text-xs"> (BETA) </span>
                 </Button>)
                 }
-                {/* <audio className="m-2" ref={audioPlayer} src={blobURL} controls="controls" /> */}
+                {showAudioPlayer && <audio className="m-2" ref={audioPlayer} src={blobURL} controls="controls" />}
             </div>
             }
 

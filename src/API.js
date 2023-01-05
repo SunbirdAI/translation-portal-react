@@ -56,13 +56,17 @@ const getTextFromSpeech = async (audio) => {
         body: JSON.stringify(data)
     };
 
-    const response = await fetch(speechToTextUrl, requestOptions);
+    // const response = await fetch(speechToTextUrl, requestOptions);
 
-    if (!response.ok) {
-        throw new Error(response.statusText);
-    }
+    // if (!response.ok) {
+    //     throw new Error(response.statusText);
+    // }
 
-    return response;
+    // return response['text'];
+
+
+    // Return some filler text for now, until the API issues are fixed
+    return "This is an example of a response"
 }
 
 const getSpeech = async (text) => {
