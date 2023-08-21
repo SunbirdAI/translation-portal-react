@@ -1,7 +1,9 @@
 import {LanguageDropdown, TextArea} from "./TranslateTextArea.styles";
 import {Button, LinearProgress} from "@mui/material";
 import Feedback from "../Feedback";
-import {VolumeUp} from "@mui/icons-material";
+import {VolumeUp, Mic, MicOff} from "@mui/icons-material";
+import {localLangString} from "../../constants";
+
 
 
 const TranslateTextArea = ({
@@ -16,7 +18,14 @@ const TranslateTextArea = ({
                                sourceLanguage,
                                targetLanguage,
                                isLoading,
-                               handleTextToSpeech
+                               handleTextToSpeech,
+                               handleSpeechToText,
+                               isRecording,
+                               startRecording,
+                               stopRecording,
+                               showAudioPlayer,
+                               audioPlayer,
+                               blobURL,
                            }) => {
     const onLanguageChange = (event) => {
         if (!disabled) {
@@ -43,6 +52,28 @@ const TranslateTextArea = ({
                 onChange={onTextChange}
             >
             </TextArea>
+            {!isLoading && sourceLanguage != "English" && 
+            <div className="container">
+                {isRecording ? 
+                (<Button
+                    disabled={text !== "" && !isRecording}
+                    color="error"
+                    endIcon={<MicOff/>}
+                    onClick={() => stopRecording()}>
+                    <span className="italic text-xs"> (BETA) </span>
+                </Button>)
+                :
+                (<Button
+                    disabled={text !== "" && isRecording}
+                    endIcon={<Mic/>}
+                    onClick={() => startRecording()}>
+                    <span className="italic text-xs"> (BETA) </span>
+                </Button>)
+                }
+                {showAudioPlayer && <audio className="m-2" ref={audioPlayer} src={blobURL} controls="controls" />}
+            </div>
+            }
+
             {isLoading && disabled && <LinearProgress color="secondary"/>}
             {!isLoading && targetLanguage === ">>lug<<" && <Button
                 disabled={translation === ''}
