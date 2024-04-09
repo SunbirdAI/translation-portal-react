@@ -37,10 +37,11 @@ const sourceOptions = [
     ...localLangOptions
 ];
 
+
 const getTargetOptions = (sourceLanguage) => {
-    const foundOption = sourceOptions.find(option => option.value === sourceLanguage);
-    return foundOption ? sourceOptions : englishOption;
-}
+    // Filter out the selected source language from all available options
+    return sourceOptions.filter(option => option.value !== sourceLanguage);
+};
 
 const Translate = () => {
     const [sourceLanguage, setSourceLanguage] = useState('eng');
@@ -52,10 +53,9 @@ const Translate = () => {
     const isMounted = useRef(false);
 
     useEffect(() => {
-        const targetOptions = getTargetOptions(sourceLanguage);
-        console.log(`targetOptions ${targetOptions}`);
-        setTargetLanguage(targetOptions[0].value);
-    }, [sourceLanguage, translation])
+        if (sourceLanguage !== 'eng') setTargetLanguage('eng');
+        else setTargetLanguage(localLangOptions[0].value);
+    }, [sourceLanguage])
 
     const handleTextToSpeech = async () => {
         setIsLoading(true);

@@ -8,8 +8,6 @@ const translationUrl = `${process.env.REACT_APP_SB_API_URL}/tasks/nllb_translate
 const textToSpeechUrl = "https://api-inference.huggingface.co/models/Sunbird/sunbird-lug-tts";
 
 export const getTranslation = async (text, sourceLang, targetLang) => {
-    console.log(`sourceLang ${sourceLang}`);
-    console.log(`targetLang ${targetLang}`);
     let requestOptions = {
         method: "POST",
         headers: {
