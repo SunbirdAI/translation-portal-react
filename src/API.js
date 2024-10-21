@@ -14,6 +14,15 @@ const requestHeaders = {
   "Content-Type": "application/json",
 };
 
+const HTTP_UNPROCESSABLE_ENTITY = 422;
+
+class ValidationError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'ValidationError';
+  }
+}
+
 export const languageId = async (text) => {
   const requestOptions = {
     method: "POST",
@@ -38,8 +47,16 @@ export const languageId = async (text) => {
 };
 
 export const getTranslation = async (text, sourceLang, targetLang) => {
-  console.log(`sourceLang ${sourceLang}`);
-  console.log(`targetLang ${targetLang}`);
+  if (!text.trim()) {
+    return 'Text is empty';
+  }
+  
+  if (sourceLang === targetLang) {
+    return 'Source and target languages are the same';
+  }
+
+  console.log(`sourceLang: ${sourceLang}`);
+  console.log(`targetLang: ${targetLang}`);
 
   const requestOptions = {
     method: "POST",
@@ -53,25 +70,32 @@ export const getTranslation = async (text, sourceLang, targetLang) => {
 
   try {
     const response = await fetch(translationUrl, requestOptions);
-    if (response.status === 422) {
-        const responseJson = await response.json();
-        console.error("Validation error:", responseJson);
-        throw new Error(`${response.status} ${response.statusText}`);
-      }
+    
+    if (response.status === HTTP_UNPROCESSABLE_ENTITY) {
+      const responseJson = await response.json();
+      console.error("Validation error:", responseJson);
+      throw new ValidationError(`${response.status} ${response.statusText}`);
+    }
+    
     if (!response.ok) {
       throw new Error(`${response.status} ${response.statusText}`);
     }
 
     const responseJson = await response.json();
-    if (!responseJson || !responseJson.output) {
+    if (!responseJson || !responseJson.output || !responseJson.output.translated_text) {
       throw new Error("Invalid response structure");
     }
 
     const translatedText = responseJson.output.translated_text;
-    console.log(`translatedText ${translatedText}`);
+    console.log(`translatedText: ${translatedText}`);
+
+    // Asynchronously send feedback
+    sendFeedback('systemTranslation', " ", "system", text, translatedText, sourceLang, targetLang)
+      .catch((e) => console.error('Feedback error:', e));
+
     return translatedText;
   } catch (err) {
-    console.error(err);
+    console.error(`Translation Error: ${err.message}. Text: "${text}" from ${sourceLang} to ${targetLang}`);
     return "Try again";
   }
 };
