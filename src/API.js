@@ -122,6 +122,7 @@ export const sendFeedback = async (
       username,
       CorrectTranslation,
       TranslatedText: translation,
+      FeedBackType: "TranslatePortal",
     }),
   };
 
