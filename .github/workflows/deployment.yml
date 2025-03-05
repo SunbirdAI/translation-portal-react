@@ -21,11 +21,11 @@ jobs:
 
       - name: Build
         env:
-          REACT_APP_SB_API_URL: ${{ secrets.REACT_APP_SB_API_URL }}
-          REACT_APP_SB_API_TOKEN: ${{ secrets.REACT_APP_SB_API_TOKEN }}
-          REACT_APP_GA4_TRACKING_ID: ${{ secrets.REACT_APP_GA4_TRACKING_ID }}
-          REACT_APP_GA4_MEASUREMENT_ID: ${{ secrets.REACT_APP_GA4_MEASUREMENT_ID }}
-          REACT_APP_FEEDBACK_URL: ${{ secrets.REACT_APP_FEEDBACK_URL }}
+          VITE_SB_API_URL: ${{ secrets.VITE_SB_API_URL }}
+          VITE_SB_API_TOKEN: ${{ secrets.VITE_SB_API_TOKEN }}
+          VITE_GA4_TRACKING_ID: ${{ secrets.VITE_GA4_TRACKING_ID }}
+          VITE_GA4_MEASUREMENT_ID: ${{ secrets.VITE_GA4_MEASUREMENT_ID }}
+          VITE_FEEDBACK_URL: ${{ secrets.VITE_FEEDBACK_URL }}
         run: CI=false npm run build
 
       - name: Deploy

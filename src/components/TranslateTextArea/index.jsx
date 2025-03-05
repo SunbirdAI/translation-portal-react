@@ -1,3 +1,5 @@
+import React, { useState, useEffect } from "react";
+
 import {
   LanguageDropdown,
   DropdownOption,
@@ -9,7 +11,6 @@ import {
 import {
   Button,
   Snackbar,
-  IconButton,
   Tooltip,
   Modal,
   Box,
@@ -17,10 +18,9 @@ import {
 import Stack from "@mui/material/Stack";
 import LinearProgress from "@mui/material/LinearProgress";
 import Feedback from "../Feedback";
-import FeedbackImage from "../../images/feedback2.png";
+import FeedbackImage from "../../images/feedback.png";
 // import Typewriter from "../Typewriter";
 import { ContentCopy } from "@mui/icons-material";
-import React, { useState, useEffect } from "react";
 
 const languageNames = {
   eng: "English",
@@ -110,14 +110,18 @@ const TranslateTextArea = ({
           </LanguageDropdown>
           {disabled && (
             <Tooltip title="Provide Feedback">
-              <IconButton onClick={handleFeedbackOpen} sx={{ ml: 2 }}>
-                <img
-                  src={FeedbackImage}
-                  alt="Feedback"
-                  style={{ width: 50, height: 50 }}
-                />
-              </IconButton>
-            </Tooltip>
+            <button
+              onClick={handleFeedbackOpen}
+              //disabled={translation ? false : true}
+              className={`w-12 h-12 hover:opacity-50 disabled:opacity-50`}
+            >
+              <img
+                src={FeedbackImage}
+                alt="Feedback"
+                //style={{ width: 40, height: 40 }}
+              />
+            </button>
+          </Tooltip>
           )}
         </div>
 

@@ -1,3 +1,4 @@
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import {
   MainContainer,
   Note,
@@ -5,7 +6,6 @@ import {
   SplitContainer,
 } from "./Translate.styles";
 import TranslateTextArea from "../TranslateTextArea";
-import { useEffect, useRef, useState, useCallback } from "react";
 import { debounce } from "lodash";
 import { languageId, translateSB } from "../../API";
 import SamplePhrases from "../SamplePhrases";

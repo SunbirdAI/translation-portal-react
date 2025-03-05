@@ -1,3 +1,5 @@
+import React from 'react';
+
 import {Nav, Title} from "./Header.styles";
 import img from '../../images/logo.png';
 

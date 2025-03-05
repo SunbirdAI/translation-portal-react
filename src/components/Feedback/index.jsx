@@ -1,5 +1,7 @@
+import React from 'react';
+
 import { useEffect, useRef, useState } from "react";
-import { Alert, Button, TextField, Grid, Typography, Box } from "@mui/material";
+import { Alert, Button, TextField, Grid2, Typography, Box } from "@mui/material";
 import { ThumbDown, ThumbUp } from "@mui/icons-material";
 import { sendFeedback } from "../../API";
 
@@ -44,8 +46,8 @@ const Feedback = ({ sourceText, translation, from, to }) => {
         <Box>
             <Typography variant="h6" gutterBottom>Feedback</Typography>
             <Typography variant="body2" gutterBottom>Please help us improve the translation quality with your feedback.</Typography>
-            <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+            <Grid2 container spacing={2}>
+                <Grid2 item xs={12} sm={6}>
                     <Button
                         variant={rating === 1 ? "contained" : "outlined"}
                         disabled={rated || translation === ''}
@@ -55,8 +57,8 @@ const Feedback = ({ sourceText, translation, from, to }) => {
                     >
                         Good translation
                     </Button>
-                </Grid>
-                <Grid item xs={12} sm={6}>
+                </Grid2>
+                <Grid2 item xs={12} sm={6}>
                     <Button
                         disabled={rated || translation === ''}
                         variant={rating === 2 ? "contained" : "outlined"}
@@ -66,8 +68,8 @@ const Feedback = ({ sourceText, translation, from, to }) => {
                     >
                         Bad translation
                     </Button>
-                </Grid>
-            </Grid>
+                </Grid2>
+            </Grid2>
             {showAlert && <Alert className="mt-4" severity="success">Thanks for the feedback</Alert>}
             {showDialog && (
                 <Box mt={2}>

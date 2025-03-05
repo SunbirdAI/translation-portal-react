@@ -1,4 +1,4 @@
-import tw, {styled} from "twin.macro";
+import tw, { styled } from "twin.macro";
 
 export const Nav = styled.div`
   ${tw`

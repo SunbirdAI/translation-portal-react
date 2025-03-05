@@ -1,16 +1,20 @@
 import pRetry from "p-retry";
 
-const FEEDBACK_URL = process.env.REACT_APP_FEEDBACK_URL;
-const HUGGING_FACE_API_KEY = process.env.REACT_APP_HUGGING_FACE_API_KEY;
-export const tracking_id = process.env.REACT_APP_GA4_TRACKING_ID;
+const FEEDBACK_URL = import.meta.env.VITE_FEEDBACK_URL;
+const HUGGING_FACE_API_KEY = import.meta.env.VITE_HUGGING_FACE_API_KEY;
+export const tracking_id = import.meta.env.VITE_GA4_TRACKING_ID;
 
-const languageIdUrl = `${process.env.REACT_APP_SB_API_URL}/tasks/classify_language`;
-const translationUrl = `${process.env.REACT_APP_SB_API_URL}/tasks/nllb_translate`;
+const languageIdUrl = `${
+  import.meta.env.VITE_SB_API_URL
+}/tasks/classify_language`;
+const translationUrl = `${
+  import.meta.env.VITE_SB_API_URL
+}/tasks/nllb_translate`;
 const textToSpeechUrl =
   "https://api-inference.huggingface.co/models/Sunbird/sunbird-lug-tts";
 
 const requestHeaders = {
-  Authorization: `Bearer ${process.env.REACT_APP_SB_API_TOKEN}`,
+  Authorization: `Bearer ${import.meta.env.VITE_SB_API_TOKEN}`,
   "Content-Type": "application/json",
 };
 
@@ -19,7 +23,7 @@ const HTTP_UNPROCESSABLE_ENTITY = 422;
 class ValidationError extends Error {
   constructor(message) {
     super(message);
-    this.name = 'ValidationError';
+    this.name = "ValidationError";
   }
 }
 
@@ -48,11 +52,11 @@ export const languageId = async (text) => {
 
 export const getTranslation = async (text, sourceLang, targetLang) => {
   if (!text.trim()) {
-    return 'Text is empty';
+    return "Text is empty";
   }
-  
+
   if (sourceLang === targetLang) {
-    return 'Source and target languages are the same';
+    return "Source and target languages are the same";
   }
 
   console.log(`sourceLang: ${sourceLang}`);
@@ -70,19 +74,23 @@ export const getTranslation = async (text, sourceLang, targetLang) => {
 
   try {
     const response = await fetch(translationUrl, requestOptions);
-    
+
     if (response.status === HTTP_UNPROCESSABLE_ENTITY) {
       const responseJson = await response.json();
       console.error("Validation error:", responseJson);
       throw new ValidationError(`${response.status} ${response.statusText}`);
     }
-    
+
     if (!response.ok) {
       throw new Error(`${response.status} ${response.statusText}`);
     }
 
     const responseJson = await response.json();
-    if (!responseJson || !responseJson.output || !responseJson.output.translated_text) {
+    if (
+      !responseJson ||
+      !responseJson.output ||
+      !responseJson.output.translated_text
+    ) {
       throw new Error("Invalid response structure");
     }
 
@@ -90,12 +98,21 @@ export const getTranslation = async (text, sourceLang, targetLang) => {
     console.log(`translatedText: ${translatedText}`);
 
     // Asynchronously send feedback
-    sendFeedback('systemTranslation', " ", "system", text, translatedText, sourceLang, targetLang)
-      .catch((e) => console.error('Feedback error:', e));
+    sendFeedback(
+      "systemTranslation",
+      " ",
+      "system",
+      text,
+      translatedText,
+      sourceLang,
+      targetLang
+    ).catch((e) => console.error("Feedback error:", e));
 
     return translatedText;
   } catch (err) {
-    console.error(`Translation Error: ${err.message}. Text: "${text}" from ${sourceLang} to ${targetLang}`);
+    console.error(
+      `Translation Error: ${err.message}. Text: "${text}" from ${sourceLang} to ${targetLang}`
+    );
     return "Try again";
   }
 };
