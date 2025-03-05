@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 const Typewriter = ({ text, delay, infinite, onUpdate }) => {
-  const [currentText, setCurrentText] = useState('');
+  const [currentText, setCurrentText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -11,12 +11,12 @@ const Typewriter = ({ text, delay, infinite, onUpdate }) => {
       timeout = setTimeout(() => {
         const updatedText = currentText + text[currentIndex];
         setCurrentText(updatedText);
-        setCurrentIndex(prevIndex => prevIndex + 1);
+        setCurrentIndex((prevIndex) => prevIndex + 1);
         onUpdate(updatedText); // Call the callback function to update the parent component
       }, delay);
     } else if (infinite) {
       setCurrentIndex(0);
-      setCurrentText('');
+      setCurrentText("");
     }
 
     return () => clearTimeout(timeout);
