@@ -4,11 +4,14 @@ import {
   Note,
   CloseButton,
   SplitContainer,
+  NoteText,
+  NoteContent,
 } from "./Translate.styles";
 import TranslateTextArea from "../TranslateTextArea";
 import { debounce } from "lodash";
 import { languageId, translateSB } from "../../API";
 import SamplePhrases from "../SamplePhrases";
+import { Alert, Snackbar } from "@mui/material";
 
 const localLangOptions = [
   { label: "English", value: "eng" },
@@ -26,28 +29,34 @@ const getTargetOptions = (sourceLanguage) =>
   localLangOptions.filter((option) => option.value !== sourceLanguage);
 
 const Translate = () => {
+  // Source Area States
+  const [sourceText, setSourceText] = useState("");
   const [sourceLanguage, setSourceLanguage] = useState(autoOption[0].value);
+  const [detectedLanguage, setDetectedLanguage] = useState(null);
+  const [autoDetected, setAutoDetected] = useState(true);
+
+  // Translation Area States
+  const [translation, setTranslation] = useState("");
   const [targetLanguage, setTargetLanguage] = useState(
     localLangOptions[1].value
   );
-  const [sourceText, setSourceText] = useState("");
-  const [translation, setTranslation] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [detectedLanguage, setDetectedLanguage] = useState("");
-  const [language, setLanguage] = useState("");
-  const [autoDetected, setAutoDetected] = useState(true);
-  const [charCountLimit, setCharCountLimit] = useState(true);
+
+  // UI States
   const [showNote, setShowNote] = useState(true);
-  const prevTarget = useRef();
-  const isMounted = useRef(false);
+  const [error, setError] = useState(false);
+
+  // Refs for tracking
+  const prevTargetRef = useRef(targetLanguage);
   const isComponentMounted = useRef(true);
 
-  useEffect(() => {
-    return () => {
-      isComponentMounted.current = false;
-    };
-  }, []);
+  // Close error snackbar
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") return;
+    setError(false);
+  };
 
+  // Prevent same source and target language
   useEffect(() => {
     if (sourceLanguage === targetLanguage) {
       const newTargetLanguage =
@@ -56,117 +65,157 @@ const Translate = () => {
     }
   }, [sourceLanguage]);
 
+  // Language Detection
   const detectLanguage = useCallback(
     debounce(async (text) => {
-      if (text === "") {
-        // setSourceLanguage('auto');
+      if (!text || text.trim() === "" || !autoDetected) {
+        setDetectedLanguage(null);
         return;
       }
-      try {
-        if (autoDetected) {
-          const detectedLanguage = await languageId(text.substring(0, 18));
-          if (isComponentMounted.current) {
-            if (detectedLanguage === "language not detected") {
-              setLanguage("auto");
-              setSourceLanguage("auto");
-            } else {
-              setDetectedLanguage(detectedLanguage);
-              setLanguage(detectedLanguage);
-              setSourceLanguage(detectedLanguage);
 
-              if (detectedLanguage === targetLanguage) {
-                setTranslation(
-                  "Detected language is the same as the target language."
-                );
-              }
+      try {
+        const detected = await languageId(text.substring(0, 18));
+        
+        if (!isComponentMounted.current) return;
+
+        if (detected === "language not detected") {
+          setDetectedLanguage("auto");
+          setSourceLanguage("auto");
+          setError(true);
+        } else {
+          setDetectedLanguage(detected);
+          
+          // Only update source language if different
+          if (detected !== sourceLanguage) {
+            setSourceLanguage(detected);
+
+            // Check if detected language is same as target
+            if (detected === targetLanguage) {
+              setError(true);
+              // Automatically change target language
+              const newTargetLanguage = getTargetOptions(detected)[0]?.value;
+              setTargetLanguage(newTargetLanguage);
             }
           }
         }
-      } catch (e) {
-        console.error(e);
+      } catch (error) {
+        console.error("Language detection error:", error);
+        setDetectedLanguage(null);
       }
     }, 1000),
-    [autoDetected, targetLanguage]
+    [autoDetected, sourceLanguage, targetLanguage]
   );
 
+  // Trigger language detection
   useEffect(() => {
     detectLanguage(sourceText);
   }, [sourceText, detectLanguage]);
 
+  // Translation Logic
   const translate = useCallback(
-    async (sourceText) => {
-      if (sourceText.trim() === "") {
+    async (text) => {
+      // Prevent translation if no text or source language is auto
+      if (!text || text.trim() === "") {
         setTranslation("");
         setIsLoading(false);
         return;
       }
-      try {
-        if (sourceLanguage === "auto") {
-          setTranslation("");
-          setIsLoading(false);
-          console.log("loading is false");
-          // return;
-        } else {
-          setIsLoading(true);
-          console.log("loading is true");
-          const result = await translateSB(
-            sourceText,
-            sourceLanguage,
-            targetLanguage
-          );
-          if (isComponentMounted.current) {
-            setTranslation(result);
-            setIsLoading(false);
-          }
-        }
-      } catch (e) {
-        if (isComponentMounted.current) {
-          setTranslation("");
-        }
-        console.error(e);
-      }
-      if (isComponentMounted.current) {
+
+      // Skip translation if source language is auto
+      if (sourceLanguage === "auto") {
+        //setTranslation("Please select a source language");
         setIsLoading(false);
-        console.log("loading is false");
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        const result = await translateSB(
+          text,
+          sourceLanguage,
+          targetLanguage
+        );
+
+        if (isComponentMounted.current) {
+          setTranslation(result);
+        }
+      } catch (error) {
+        console.error("Translation error:", error);
+        setTranslation("Translation failed");
+      } finally {
+        if (isComponentMounted.current) {
+          setIsLoading(false);
+        }
       }
     },
     [sourceLanguage, targetLanguage]
   );
 
+  // Trigger translation when relevant states change
   useEffect(() => {
-    if (!isMounted.current) {
-      isMounted.current = true;
-      return;
-    }
-    if (prevTarget.current !== targetLanguage) {
+    // Reset translation if target language changes
+    if (prevTargetRef.current !== targetLanguage) {
       setTranslation("");
     }
-    // setIsLoading(true);
-    // console.log("loading is true")
-    prevTarget.current = targetLanguage;
+    prevTargetRef.current = targetLanguage;
 
-    const timeOutId = setTimeout(() => translate(sourceText), 500);
-    return () => clearTimeout(timeOutId);
+    // Debounce translation
+    const timeoutId = setTimeout(() => translate(sourceText), 500);
+    return () => clearTimeout(timeoutId);
   }, [sourceText, targetLanguage, sourceLanguage, translate]);
 
+  // Hide note after timeout
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowNote(false);
-    }, 9999); // Hide the note after 10 seconds
-
+    const timer = setTimeout(() => setShowNote(false), 10000);
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div>
+    <div className="h-fit">
       {showNote && (
-        <Note>
-          Note: Our auto language detection currently supports the following
-          languages: English, Luganda, Acholi, Ateso, Lugbara, and Runyankole.
-          We are actively working on improving this feature and adding support
-          for more languages in the future.
-          <CloseButton onClick={() => setShowNote(false)}>✖</CloseButton>
-        </Note>
+        <Note
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 50 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      >
+        <NoteContent>
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            className="h-8 w-8 text-blue-500 mr-4" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
+            />
+          </svg>
+          <NoteText>
+            Our auto language detection currently supports the following languages: 
+            English, Luganda, Acholi, Ateso, Lugbara, and Runyankole. 
+            We are actively working on improving this feature and adding support 
+            for more languages in the future.
+          </NoteText>
+          <CloseButton onClick={() => setShowNote(false)}>
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              className="h-5 w-5" 
+              viewBox="0 0 20 20" 
+              fill="currentColor"
+            >
+              <path 
+                fillRule="evenodd" 
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" 
+                clipRule="evenodd" 
+              />
+            </svg>
+          </CloseButton>
+        </NoteContent>
+      </Note>
       )}
       <MainContainer>
         <SplitContainer>
@@ -176,10 +225,12 @@ const Translate = () => {
             setSourceLanguage={setSourceLanguage}
             text={sourceText}
             setText={setSourceText}
-            detectedLanguage={language}
+            detectedLanguage={detectedLanguage}
             setAutoDetected={setAutoDetected}
             autoDetected={autoDetected}
-            charCountLimit={charCountLimit}
+            charCountLimit={true}
+            sourceLanguage={sourceLanguage}
+            forceLanguageSelect={detectLanguage === 'auto' ? true : false}
           />
           <TranslateTextArea
             placeholder="Translation"
@@ -192,8 +243,25 @@ const Translate = () => {
             targetLanguage={targetLanguage}
             isLoading={isLoading}
             showCopyButton={true}
+            charCountLimit={false}
           />
         </SplitContainer>
+        <Snackbar
+          open={error}
+          autoHideDuration={6000}
+          onClose={handleClose}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        >
+          <Alert
+            severity="error"
+            sx={{ width: "100%" }}
+            onClose={handleClose}
+          >
+         {
+          detectedLanguage === 'auto' || detectedLanguage === null ? "Auto detect failed. Please choose the language from the dropdown" : "Detected language is the same as the target language."
+         }
+          </Alert>
+        </Snackbar>
         <SamplePhrases
           sourceLanguage={sourceLanguage}
           setSamplePhrase={setSourceText}

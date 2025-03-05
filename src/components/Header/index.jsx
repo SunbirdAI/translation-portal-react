@@ -5,7 +5,9 @@ import img from '../../images/logo.png';
 
 const Header = () => (
     <Nav>
-        <img className="h-[40px]" alt="Logo" src={img}/>
+        <div className='h-12'>
+        <img className="w-full h-full object-contain" alt="Logo" src={img}/>
+        </div>
         <Title>
             Translate
         </Title>

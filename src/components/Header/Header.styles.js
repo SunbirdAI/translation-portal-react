@@ -18,10 +18,12 @@ export const Title = styled.h1`
   ${tw`
     font-semibold
     text-white
-    text-4xl
-    md:absolute
+    sm:text-4xl
+    text-2xl
     w-full
     right-0
     text-center
+    ml-3
+    -mt-1
     `}
 `;
