@@ -73,7 +73,7 @@ export const Note = styled(motion.div)`
     z-50 
     w-full 
     flex 
-    items-center 
+    items-start 
     justify-between 
     bg-white 
     shadow-2xl 
@@ -89,7 +89,7 @@ export const Note = styled(motion.div)`
 export const NoteContent = styled.div`
   ${tw`
     flex 
-    items-center 
+    items-start 
     space-x-4 
     max-w-5xl 
     mx-auto 

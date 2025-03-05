@@ -182,7 +182,7 @@ const Translate = () => {
         <NoteContent>
           <svg 
             xmlns="http://www.w3.org/2000/svg" 
-            className="h-8 w-8 text-blue-500 mr-4" 
+            className="h-8 w-8 text-blue-500 mr-4 shrink-0" 
             fill="none" 
             viewBox="0 0 24 24" 
             stroke="currentColor"
